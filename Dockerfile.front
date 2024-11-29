@@ -1,9 +1,9 @@
 # Imagem node recente e estável para o front em React + Vite // node:20 // nginx:1.27.3
 FROM node:20 AS build
 WORKDIR /app
-COPY package.json package-lock.json ./
+COPY ./frontend/package*.json ./
 RUN npm install
-COPY . .
+COPY ./frontend .
 RUN npm run build
 
 ## Comentários com os comandos para rodar sem o Nginx, fica em torno de 1.93GB

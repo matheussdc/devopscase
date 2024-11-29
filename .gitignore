@@ -58,4 +58,7 @@ build-iPhoneSimulator/
 ###
 .vscode/*
 !.vscode/extensions.json
-.vercel
+
+# Não ligar pros repositórios clonados
+/frontend
+/backend
