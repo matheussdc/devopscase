@@ -2,20 +2,19 @@
 FROM node:20 AS build
 WORKDIR /app
 COPY ./frontend/package*.json ./
+
+# Instala as dependências
 RUN npm install
 COPY ./frontend .
+
+# Constroi o projeto
 RUN npm run build
 
-## Comentários com os comandos para rodar sem o Nginx, fica em torno de 1.93GB
-##Expõe a porta default do Vite
-#EXPOSE 5173
-##Define o comando para rodar a aplicação usando Vite
-#CMD ["npm", "run", "dev", "--", "--host"]
-
+# Imagem Nginx para servir o projeto gerado, reduz tamanho do container
 FROM nginx:1.27.3-alpine-slim
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Expõe a porta padrão do Nginx
+# Porta padrão do Nginx
 EXPOSE 80
 
 # Inicializa o Nginx

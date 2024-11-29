@@ -1,26 +1,30 @@
-# Imagem da versão do ruby utilizada // ruby:2.7.7-alpine3.16
-FROM ruby:2.7.7
-# RUN apk add --no-cache build-base sqlite-dev tzdata bash git
-RUN apt-get update -qq && apt-get install -y build-essential libsqlite3-dev
+# Imagem da versão do ruby utilizada // ruby:2.7.7-slim
+FROM ruby:2.7.7-slim
+
+# Instala dependências do ruby-slim
+RUN apt-get update -qq && apt-get install -y build-essential libsqlite3-dev libpq-dev
+
 WORKDIR /api
 COPY ./backend/Gemfile* ./
+
+# Instala as gems
 RUN bundle install --jobs 4
 COPY ./backend .
 
-# Garante permissão de execução para o entrypoint
+# Garante permissão de execução para o entrypoint.sh
 RUN chmod +x entrypoint.sh
 
-# Resolve problema recorrente de servidor do  Rails
+# Resolve problema recorrente de servidor do Rails (talvez não funcione sempre).
 RUN rm -f tmp/pids/server.pid
 
 # Gera nova master.key porque o Rails exige
-
 RUN rm ./config/credentials.* && \
     echo "Gerando nova master.key..." && \
-    echo "dummy-master-key" > ./config/master.key && \
+    echo "chave-qualquer" > ./config/master.key && \
     rails credentials:edit
 
+# Porta padrão do servidor Puma
 EXPOSE 3000
+
+# Executa o entrypoint.sh quando inicializar o container
 ENTRYPOINT [ "/api/entrypoint.sh" ]
-# Inicializa o servidor Rails
-#CMD ["rails", "server", "-b", "0.0.0.0"]
